@@ -4,11 +4,15 @@ import './style.css'
 // import { setupCounter } from './counter.js'
 
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+//import { getFirstIntersectedObject } from './raycaster.js';
 
 // scene, camera, renderer
 const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xC8D9C4);
+let monitor;
+
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
 const renderer = new THREE.WebGLRenderer({
@@ -17,55 +21,24 @@ const renderer = new THREE.WebGLRenderer({
 
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
+
 camera.position.set(0, 5, 50);
 
-// Create an object
-const geometry = new THREE.TorusGeometry(10, 3, 16, 100);
-//const material1 = new THREE.MeshBasicMaterial({ color: 0xFF6347, wireframe: true }); // Requires no light
-const material2 = new THREE.MeshStandardMaterial({ color: 0xff6347 }); // ein helles Orange
-const torus = new THREE.Mesh(geometry, material2); // create a mesh by combining geometry and material
-
-// scene.add(torus); // add the torus to the scene
-
 // lights
-const pointLight = new THREE.PointLight(0xffffff);
-pointLight.position.set(5, 5, 5);
+
+// ceiling light !DONT DELETE!
+const sunlight = new THREE.PointLight(0xffffff, 400, 1000); // Intensity, Range
+sunlight.position.set(-8, 6, 3); //(0,5,0) in the center of the room
+scene.add(sunlight);
 
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
 const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
 
 directionalLight.position.set(80, 80, 80);
-scene.add(directionalLight);
+scene.add(ambientLight, directionalLight);
 
-// ceiling light
-const ceilingLight = new THREE.PointLight(0xffffff, 30, 500); // Intensität, Reichweite
-ceilingLight.position.set(1, 8, 0);// mitten in der Decke
-scene.add(ceilingLight);
-
-
-////////////////////////////////////////////////////////////////
-
-// SpotLight (gerichtetes Licht)
-const spotLight = new THREE.SpotLight(0xffffff, 1.5); // Farbe, Intensität
-spotLight.position.set(0, 8, 5); // Position oben an der Decke
-spotLight.angle = Math.PI / 8;   // Öffnungswinkel (kleiner = enger Strahl)
-spotLight.penumbra = 0.3;        // weicher Rand
-spotLight.decay = 2;             // Lichtabfall mit Distanz
-spotLight.distance = 20;         // Reichweite
-
-// Das Licht soll auf ein Ziel zeigen
-spotLight.target.position.set(0, -4, 0);
-scene.add(spotLight);
-scene.add(spotLight.target);
-
-// Optional: Sichtbarer Helfer
-const spotHelper = new THREE.SpotLightHelper(spotLight);
-scene.add(spotHelper);
-
-
-////////////////////////////////////////////////////////////////
 // helpers
-const lightHelper = new THREE.PointLightHelper(ceilingLight);
+const lightHelper = new THREE.PointLightHelper(sunlight);
 const gridHelper = new THREE.GridHelper(200, 50);
 scene.add(lightHelper); // for spotlight
 scene.add(gridHelper);
@@ -76,29 +49,49 @@ const controls = new OrbitControls(camera, renderer.domElement);
 // 3D Model Loader
 const loader = new GLTFLoader();
 
-loader.load('/models/isometric-room1.glb', (gltf) => {
-  const gallery = gltf.scene;
+loader.load('/models/isometric-room-model.glb', (gltf) => {
+  const room = gltf.scene;
 
-  // Hier die Größe des Modells anpassen
-  //gallery.scale.set(2, 2, 2);
-
-  gallery.position.set(0, 0, 0);
+  room.position.set(0, 0, 0);
 
   camera.position.set(0, 10, 40);
 
-  scene.add(gallery);
+  scene.add(room);
 });
 
+// TODO; Add clickable mesh for monitor --> opens a website
+//        //
+// HITBOX //
+//        //
+const monitorHitbox = new THREE.Mesh(
+    new THREE.BoxGeometry(2.05, 1.16, 0.01), // width, height, depth
+    new THREE.MeshBasicMaterial({ visible: true, color: 0x00ff00 })
+);
 
+// Hitbox position
+monitorHitbox.position.set(-1.48, 4.28, -3.42); // mesh position
+monitorHitbox.rotation.x = THREE.MathUtils.degToRad(-8);
+scene.add(monitorHitbox);
 
+// 3. Click-Event on Hitbox
+document.addEventListener('click', (event) => {
+    const raycaster = new THREE.Raycaster();
+    const pointer = new THREE.Vector2();
+    pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+    pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    raycaster.setFromCamera(pointer, camera);
+    const intersects = raycaster.intersectObject(monitorHitbox, true);
+
+    if (intersects.length > 0) {
+        console.log("Hitbox clicked!");
+        //moveCameraToHitbox(monitorHitbox);
+    }
+});
 
 // Render the scene
 function animate() {
   requestAnimationFrame(animate);
-
-  // torus.rotation.x += 0.01;
-  // torus.rotation.y += 0.01;
-  // torus.rotation.z += 0.01;
 
   controls.update();
 
