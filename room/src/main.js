@@ -73,7 +73,7 @@ monitorHitbox.position.set(-1.48, 4.28, -3.42); // mesh position
 monitorHitbox.rotation.x = THREE.MathUtils.degToRad(-8);
 scene.add(monitorHitbox);
 
-// 3. Click-Event on Hitbox
+// Click-Event on Hitbox
 document.addEventListener('click', (event) => {
     const raycaster = new THREE.Raycaster();
     const pointer = new THREE.Vector2();
