@@ -6,12 +6,15 @@ import './style.css'
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { defaultTransition } from './cameraPosition.js';
+import { CSS3DRenderer, CSS3DObject } from 'three/examples/jsm/renderers/CSS3DRenderer.js';
+
 //import { getFirstIntersectedObject } from './raycaster.js';
 
 // scene, camera, renderer
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xC8D9C4);
-let monitor;
+let monitorObject = null;
 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
@@ -59,13 +62,20 @@ loader.load('/models/isometric-room-model.glb', (gltf) => {
   scene.add(room);
 });
 
+// CSS3DRenderer erstellen
+const cssRenderer = new CSS3DRenderer();
+cssRenderer.setSize(window.innerWidth, window.innerHeight);
+//cssRenderer.domElement.style.position = 'absolute';
+cssRenderer.domElement.style.top = '0';
+document.body.appendChild(cssRenderer.domElement);
+
 // TODO; Add clickable mesh for monitor --> opens a website
 //        //
 // HITBOX //
 //        //
 const monitorHitbox = new THREE.Mesh(
     new THREE.BoxGeometry(2.05, 1.16, 0.01), // width, height, depth
-    new THREE.MeshBasicMaterial({ visible: true, color: 0x00ff00 })
+    new THREE.MeshBasicMaterial({ visible: false })
 );
 
 // Hitbox position
@@ -85,7 +95,27 @@ document.addEventListener('click', (event) => {
 
     if (intersects.length > 0) {
         console.log("Hitbox clicked!");
-        //moveCameraToHitbox(monitorHitbox);
+
+        defaultTransition(2, camera, controls);
+
+        if (!monitorObject) {
+            // get HTML element
+            const monitorElement = document.getElementById('monitorScreen');
+
+            // create CSS3DObject
+            monitorObject = new CSS3DObject(monitorElement);
+
+            // Position & Rotation
+            monitorObject.position.copy(monitorHitbox.position);
+            monitorObject.rotation.copy(monitorHitbox.rotation);
+
+            // Größe anpassen
+            monitorObject.scale.set(0.0025, 0.0025, 0.0025);
+            scene.add(monitorObject);
+
+            //not doing anything yet???
+            //monitorElement.style.display = 'block';
+        }
     }
 });
 
@@ -96,6 +126,8 @@ function animate() {
   controls.update();
 
   renderer.render(scene, camera);
+
+  cssRenderer.render(scene, camera);
 }
 
 animate();
