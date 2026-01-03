@@ -20,7 +20,6 @@
         z-index: 9999;
       }
 
-
       #startButton {
         border-radius: 10px;
         border: none;
@@ -40,6 +39,30 @@
       #startButton:hover {
         background-color: #555;
       }
+      #themeToggle {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.85);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 10000;
+        font-size: 22px;
+      }
+
+      #themeToggle:hover {
+        transform: scale(1.1);
+      }
+
+      body.night #themeToggle {
+        background: rgba(20,20,30,0.9);
+      }
+
     </style>
   </head>
 
@@ -49,6 +72,9 @@
       <button id="startButton">Start</button>
     </div>
 
+    <div id="themeToggle">
+      <span class="icon">☀️</span>
+    </div>
     <canvas id="bg"></canvas>
 
     <script type="module" src="/src/main.js"></script>

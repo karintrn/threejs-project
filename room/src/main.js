@@ -5,7 +5,10 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { defaultTransition } from './cameraPosition.js';
 import { resetTransition } from './cameraPosition.js';
 import { CSS3DRenderer, CSS3DObject } from 'three/examples/jsm/renderers/CSS3DRenderer.js';
-
+import { toggleNightMode } from './nightMode.js';
+//                 //
+// loading manager //
+//                 //
 const loadingManager = new THREE.LoadingManager();
 
 loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
@@ -32,10 +35,6 @@ loadingManager.onLoad = () => {
 //                         //
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xC8D9C4);
-//scene.background = new THREE.Color(0xffffff);
-//scene.background = new THREE.Color(0xbe8f6e);
-//scene.background = new THREE.Color(0x9ebac8);
-//scene.background = new THREE.Color(0xc7d2ab);
 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
@@ -48,63 +47,76 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 
+// sphere //
+
+const sphere = new THREE.Mesh(
+    new THREE.SphereGeometry(2, 50, 50),
+    new THREE.MeshPhysicalMaterial({ 
+      roughness: 0,
+      metalness: 0,
+      transmission: 1,
+      ior: 2.33
+    })
+);
+sphere.position.set(-8, 15, -8);
+scene.add(sphere);
+
 //camera.position.set(0, 5, 50);
+
 //        //
 // lights //
 //        //
 
-// ceiling light !DONT DELETE!
-// const sunlight = new THREE.PointLight(0xffffff, 400, 1000); // Intensity, Range
-// sunlight.position.set(-8, 6, 3); //(0,5,0) in the center of the room
-// //scene.add(sunlight);
-
-// const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-// const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
-
-// directionalLight.position.set(80, 80, 80);
-// //scene.add(ambientLight);
-// scene.add(directionalLight);
-
-// LIGHTS FOR SHADOWS //
-
-//const hemiLight = new THREE.HemisphereLight( 0xffffaa, 0xaaaaaa, 2.5  ); 
-const hemiLight = new THREE.HemisphereLight( 0xffffff, 0xaaaaaa, 2.5  ); 
-//const hemiLight = new THREE.HemisphereLight( 0xffffff, 0xaaaaaa, 1  ); 
+const hemiLight = new THREE.HemisphereLight( 0xffffff, 0xaaaaaa, 2.5  );
 hemiLight.position.set( 0, 500, 0 );
 scene.add( hemiLight );
 
 
 const sunLight = new THREE.DirectionalLight(0xffffff, 4); // weiße Sonne
-sunLight.position.set(-100, 100, 100); // Richtung Sonne
+sunLight.position.set(-100, 100, 40); // Richtung Sonne
 sunLight.castShadow = true;
 // soft shadows
-sunLight.shadow.mapSize.width = 2048;
-sunLight.shadow.mapSize.height = 2048;
+sunLight.shadow.mapSize.width = 4096;
+sunLight.shadow.mapSize.height = 4096;
 sunLight.shadow.camera.left = -50;
 sunLight.shadow.camera.right = 50;
 sunLight.shadow.camera.top = 50;
 sunLight.shadow.camera.bottom = -50;
 sunLight.shadow.camera.near = 1;
-sunLight.shadow.camera.far = 200;
+sunLight.shadow.camera.far = 280;
 
 scene.add(sunLight);
 
+const moonLight = new THREE.DirectionalLight(0x8aa0ff, 0);
+moonLight.position.set(100, 100, -40);
+moonLight.castShadow = true;
+moonLight.shadow.mapSize.width = 4096;
+moonLight.shadow.mapSize.height = 4096;
+moonLight.shadow.camera.left = -50;
+moonLight.shadow.camera.right = 50;
+moonLight.shadow.camera.top = 50;
+moonLight.shadow.camera.bottom = -50;
+moonLight.shadow.camera.near = 1;
+moonLight.shadow.camera.far = 280;
+scene.add(moonLight);
 
-
-const dirHelper = new THREE.DirectionalLightHelper( sunLight, 10 );
-scene.add( dirHelper );
+const moonHelper = new THREE.DirectionalLightHelper( moonLight, 10 );
+scene.add( moonHelper );
 
 
 //         //
 // helpers //
 //         //
-//const lightHelper = new THREE.PointLightHelper(sunlight);
+const dirHelper = new THREE.DirectionalLightHelper( sunLight, 10 );
+scene.add( dirHelper );
+
 //const gridHelper = new THREE.GridHelper(200, 50);
-//scene.add(lightHelper); // for spotlight
 //scene.add(gridHelper);
 
 // orbit controls
 const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08; 
 
 // 3D Model Loader
 //const loader = new GLTFLoader();
@@ -115,25 +127,13 @@ const startButton = document.getElementById('startButton');
 startButton.addEventListener('click', () => {
   startButton.style.display = 'none';
 
-  // Kamera fährt ins Modell (GSAP, falls du gsap schon hast)
   resetTransition(2, camera, controls);
 
-  // OrbitControls wieder aktivieren
   controls.enabled = true;
 });
 
 
-// loader.load('/models/isometric-room.glb', (gltf) => {
-//   const room = gltf.scene;
-
-//   room.position.set(0, 0, 0);
-
-//   camera.position.set(-10, 5, 35);
-
-//   scene.add(room);
-// });
-
-loader.load('/models/isometric-room.glb', (gltf) => {
+loader.load('/models/isometric-room-plane.glb', (gltf) => {
   const room = gltf.scene;
 
   room.traverse((child) => {
@@ -153,7 +153,6 @@ loader.load('/models/isometric-room.glb', (gltf) => {
 // CSS3DRenderer erstellen
 const cssRenderer = new CSS3DRenderer();
 cssRenderer.setSize(window.innerWidth, window.innerHeight);
-//cssRenderer.domElement.style.position = 'absolute';
 cssRenderer.domElement.style.top = '0';
 document.body.appendChild(cssRenderer.domElement);
 
@@ -366,3 +365,21 @@ function animate() {
 }
 
 animate();
+
+window.addEventListener('DOMContentLoaded', () => {
+  const themeToggle = document.getElementById('themeToggle');
+
+  themeToggle.addEventListener('click', () => {
+    const isNight = toggleNightMode({
+      scene,
+      sunLight,
+      hemiLight,
+      moonLight,
+      screenMaterial,
+      renderer,
+      mode
+    });
+
+    themeToggle.textContent = isNight ? '🌙' : '☀️';
+  });
+});

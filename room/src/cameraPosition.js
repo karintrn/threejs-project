@@ -1,4 +1,3 @@
-import * as THREE from 'three';
 import { gsap } from "gsap";
 
 export async function defaultTransition(duration, instance, controls) {
