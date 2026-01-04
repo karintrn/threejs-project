@@ -100,15 +100,15 @@ moonLight.shadow.camera.near = 1;
 moonLight.shadow.camera.far = 280;
 scene.add(moonLight);
 
-const moonHelper = new THREE.DirectionalLightHelper( moonLight, 10 );
-scene.add( moonHelper );
+//const moonHelper = new THREE.DirectionalLightHelper( moonLight, 10 );
+//scene.add( moonHelper );
 
 
 //         //
 // helpers //
 //         //
-const dirHelper = new THREE.DirectionalLightHelper( sunLight, 10 );
-scene.add( dirHelper );
+//const dirHelper = new THREE.DirectionalLightHelper( sunLight, 10 );
+//scene.add( dirHelper );
 
 //const gridHelper = new THREE.GridHelper(200, 50);
 //scene.add(gridHelper);
