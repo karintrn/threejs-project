@@ -48,8 +48,15 @@ renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 
 // sphere //
+const glowMaterial = new THREE.MeshStandardMaterial({
+  color: 0xffd2a1,
+  emissive: 0xffa95c,
+  emissiveIntensity: 1.5,
+  roughness: 0.3,
+  metalness: 0.0
+});
 
-const sphere = new THREE.Mesh(
+const sphere1 = new THREE.Mesh(
     new THREE.SphereGeometry(2, 50, 50),
     new THREE.MeshPhysicalMaterial({ 
       roughness: 0,
@@ -58,10 +65,37 @@ const sphere = new THREE.Mesh(
       ior: 2.33
     })
 );
-sphere.position.set(-8, 15, -8);
-scene.add(sphere);
+sphere1.position.set(-8, 12, -2);
+scene.add(sphere1);
 
-//camera.position.set(0, 5, 50);
+const sphere2 = new THREE.Mesh(
+    new THREE.SphereGeometry(2, 50, 50),
+    glowMaterial
+);
+sphere2.position.set(0, 15, -8);
+scene.add(sphere2);
+
+const sphere3 = new THREE.Mesh(
+    new THREE.SphereGeometry(2, 50, 50),
+    new THREE.MeshPhysicalMaterial({ 
+      roughness: 0,
+      metalness: 0,
+      transmission: 1,
+      ior: 2.33
+    })
+);
+sphere3.position.set(6, 6, -8);
+scene.add(sphere3);
+
+const sphere4 = new THREE.Mesh(
+  new THREE.SphereGeometry(2, 50, 50),
+  glowMaterial
+);
+
+sphere4.position.set(-8, 7, 4);
+scene.add(sphere4);
+
+
 
 //        //
 // lights //
@@ -116,7 +150,9 @@ scene.add(moonLight);
 // orbit controls
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
-controls.dampingFactor = 0.08; 
+controls.dampingFactor = 0.08;
+controls.maxDistance = 35; // nicht weiter weg
+
 
 // 3D Model Loader
 //const loader = new GLTFLoader();
