@@ -1,4 +1,4 @@
-# Three.js Isometric Room
+# Projektarbeit WS 25/26: Three.js Isometric Room
 
 ## Overview
 
@@ -17,19 +17,20 @@ Der Raum besteht aus mehreren Objekten wie einem Schreibtisch, einem Stuhl und e
 
 ## Beschreibung
 
-Der isometrische Raum wurde von mir vollständig in Blender erstellt und als eigenständiges 3D Environment modelliert. Die Raumstruktur selbst, also Wände, Boden und der grundlegende Aufbau, ist komplett eigenständig entstanden.
+Der isometrische Raum wurde von mir vollständig in Blender erstellt und als eigenständiges 3D Environment modelliert. Die Raumstruktur selbst, also Wände, Boden und der grundlegende Aufbau, ist komplett eigenständig entstanden.  
 Die Möbel und Objekte innerhalb des Raumes stammen von verschiedenen Creatorinnen und Creatorn auf Sketchfab. Diese Modelle habe ich heruntergeladen, in Blender importiert und anschließend in meinen Raum eingesetzt, angepasst und positioniert, sodass sie sich stimmig in die Szene einfügen. Die Quellen zu allen verwendeten externen Modellen sind im Projekt unten verlinkt.
-Nachdem alle Elemente zusammengeführt wurden, habe ich das gesamte Modell für die Nutzung im Web optimiert und als glb-Datei exportiert. Dieses Modell wird anschließend direkt in der main.js Datei in Three.js eingebunden.
-In Three js wurde die komplette Szene umgesetzt, inklusive Kamera, Beleuchtung und Interaktionen. Der Monitor auf dem Schreibtisch ist als klickbares Objekt umgesetzt und ermöglicht das Wechseln zwischen verschiedenen Seiten oder Inhalten.
-Zusätzlich besitzt die Szene einen Tag Nacht Modus, der über einen Button gesteuert wird.
-Im Tag Modus ist der Raum hell und neutral ausgeleuchtet und vermittelt eine klare und ruhige Atmosphäre.
-Der Nacht Modus verwendet eine dunklere und stimmungsvollere Beleuchtung mit angepassten Lichtquellen, wodurch eine atmosphärische Wirkung entsteht.
-Durch die Kombination aus eigenem Modeling, externen Assets, interaktiven Elementen und dynamischer Beleuchtung entsteht ein interaktiver isometrischer Raum, der gezielt für den Einsatz im Web konzipiert ist.
+
+Nachdem alle Elemente zusammengeführt wurden, habe ich das gesamte Modell für die Nutzung im Web optimiert und als glb-Datei exportiert. Dieses Modell wird anschließend direkt in der `main.js` Datei in Three.js eingebunden.  
+
+Im ursprünglichen Projektplan wollte ich ein **Museum** in die Szene setzen. Dabei zeigte sich jedoch, dass die Beleuchtung nicht ausreichte, um einen geschlossenen Museumsraum realistisch und gleichmäßig auszuleuchten.  
+Aus diesem Grund habe ich mich für den **offeneren, isometrischen Raum** entschieden, der einfacher zu belichten ist und die Interaktivität besser unterstützt.
+
+In Three.js wurde die komplette Szene umgesetzt, inklusive Kamera, Beleuchtung und Interaktionen. Der Monitor auf dem Schreibtisch ist als klickbares Objekt umgesetzt und ermöglicht das Wechseln zwischen verschiedenen Seiten oder Inhalten. Zusätzlich besitzt die Szene einen Tag-/Nacht-Modus, der über einen Button gesteuert wird.  
+Im Tag-Modus ist der Raum hell und neutral ausgeleuchtet, im Nacht-Modus wird eine stimmungsvolle, dunklere Atmosphäre erzeugt.
 
 ---
 
 ## Features
-
 - Isometrischer 3D-Raum  
 - Importierte und angepasste 3D-Assets aus Blender  
 - Klickbarer Monitor mit mehreren Zuständen  
@@ -37,46 +38,111 @@ Durch die Kombination aus eigenem Modeling, externen Assets, interaktiven Elemen
 
 ---
 
-## Getting Started
+## Schnellstart
 
-### Prerequisites
-
+### Systemvoraussetzungen
 - Node.js
 - npm
 
 ### Installation & Start
-
 ```bash
+# Repository klonen und ins Projektverzeichnis wechseln
+git clone https://github.com/karintrn/threejs-project.git
 cd room
+
+# Abhängigkeiten installieren
 npm install
+
+# Projekt starten
 npm run dev
+
+## Im Browser ansehen
+Standardmäßig unter: http://localhost:5173
 ```
+---
+
+## Three.js Grundlagen im Projekt
+
+Die Szene in Three.js folgt dem klassischen Aufbau:
+
+1. **Szene (Scene)** – enthält alle Objekte, Lichtquellen und Hilfsmittel.  
+2. **Kamera (Camera)** – definiert den Blickwinkel auf die Szene. Hier kommt eine perspektivische Kamera zum Einsatz.  
+3. **Renderer (WebGLRenderer)** – rendert die Szene in das HTML-Canvas und aktualisiert die Darstellung bei Interaktionen oder Animationen.  
+
+Die Szene enthält sowohl mein **importierts 3D-Modelle aus Blender**, als auch **primitive Objekte**, die direkt in Three.js erzeugt wurden, wie z. B. Kugeln.  
+Das Ziel war es zu demonstrieren, dass man in Three.js auch ohne externe Modelle einfache Formen erzeugen kann, allerdings ist das Angebot an Formen begrenzt (z. B. Boxen, Kugeln, Kegel), weshalb komplexere Objekte wie Möbel oder ganze Räume weiterhin in Blender erstellt werden müssen.
+
+Zusätzlich habe ich zwei Lichtquellen gesetzt, Schattenberechnung aktiviert und die Interaktivität implementiert (z. B. klickbarer Monitor, Tag-/Nacht-Modus).  
+Dieses Projekt verdeutlicht somit die grundlegenden Konzepte von Three.js: Szene, Kamera, Renderer, Licht und Objekte, sowie einfache Interaktionen.
+
+### Interaktivität mit Raycasting
+
+Um Objekte in der 3D-Szene anklickbar zu machen, habe ich den **Raycaster** in eine eigene Datei `raycaster.js` ausgelagert.  
+Dies sorgt für sauberen und wiederverwendbaren Code.  
+
+Funktionsweise:
+
+- Ein Strahl wird von der Kamera zur Mausposition gesendet.  
+- Alle Objekte in der Szene werden auf Schnittpunkte überprüft.  
+- Objekte mit bestimmten Namen (z. B. der Monitor) werden anschließend ausgewählt.  
+
+Ziel: Es sollte demonstriert werden, dass man auf bestimmte Objekte in der Szene klicken und Interaktionen auslösen kann, ohne die Hauptdatei `main.js` zu überladen.
+
+### Kameratransitionen & Animationen
+
+Um die Bewegung der Kamera flüssig zu gestalten, kommt die Bibliothek **GSAP** zum Einsatz.  
+Die Kamera kann z. B. beim Klick auf den Monitor sanft auf eine neue Position wechseln und wieder zurück.  
+
+- `defaultTransition()` – fährt die Kamera zu einem Fokuspunkt (z. B. Monitor)  
+- `resetTransition()` – fährt die Kamera zurück zur Ausgangsposition  
+
+Ziel: Es sollte gezeigt werden, dass man Kamerapositionen in Three.js mit externen Animationsbibliotheken wie GSAP elegant und flüssig steuern kann.
 
 ---
 
 ## Herausforderungen und Probleme
 
+### Ladezeiten und Benutzererfahrung
+
+Beim ersten Start des Projekts konnte es manchmal einige Sekunden dauern, bis alle 3D-Modelle und Texturen im Browser geladen waren.  
+Dadurch sah man, wie die Szene nach und nach gerendert wurde, was visuell unschön wirkte.  
+
+Um die Benutzererfahrung zu verbessern, habe ich einen **einfachen Loading Screen** mit Start-Knopf implementiert.  
+Er zeigt an, dass die Szene noch geladen wird, und ermöglicht dem Nutzer, erst dann in den Raum zu wechseln, wenn alles vollständig bereit ist.
+
 ### Beleuchtung und Schatten
 
-Die Beleuchtung war eine der größten Herausforderungen des Projekts.  
+Die Beleuchtung war eine der größten Herausforderungen des Projekts.
 Das Zusammenspiel aus verschiedenen Lichtquellen, deren Positionierung sowie die Einstellung von Intensität und Farbe erforderte viel Feinarbeit.
 
-Besonders die Umsetzung von **Schatten** erwies sich als schwierig. Um saubere und realistische Schatten zu erzeugen, mussten viele Parameter angepasst werden, wobei kleine Änderungen oft große visuelle Auswirkungen hatten. Eine realistische Simulation von Sonnen- und Mondlicht ist zwar möglich, jedoch sehr aufwendig und für den Projektumfang nur eingeschränkt sinnvoll.
+```code
+const sunLight = new THREE.DirectionalLight(0xffffff, 4); // white sunlight
+sunLight.position.set(-100, 100, 40); // sun direction
+sunLight.castShadow = true;
+// soft shadows
+sunLight.shadow.mapSize.width = 4096;
+sunLight.shadow.mapSize.height = 4096;
+sunLight.shadow.camera.left = -50;
+sunLight.shadow.camera.right = 50;
+sunLight.shadow.camera.top = 50;
+sunLight.shadow.camera.bottom = -50;
+sunLight.shadow.camera.near = 1;
+sunLight.shadow.camera.far = 280;
 
+scene.add(sunLight);
+```
+Besonders die Umsetzung von Schatten erwies sich als schwierig. Um saubere und realistische Schatten zu erzeugen, mussten viele Parameter angepasst werden, wobei kleine Änderungen oft große visuelle Auswirkungen hatten. Eine realistische Simulation von Sonnen- und Mondlicht ist zwar möglich, jedoch sehr aufwendig und für den Projektumfang nur eingeschränkt sinnvoll.
+Ursprünglich wollte ich ein Museum in der Szene umsetzen, doch die geschlossene Architektur war zu schwierig realistisch auszuleuchten. Deshalb habe ich den isometrischen Raum gewählt, der offener ist und sich besser für Three.js eignet.
 ### Monitor Interaktion
-
-Ein weiterer Problembereich war die Umsetzung eines **interaktiven Bildschirms** im 3D-Raum.  
+Ein weiterer Problembereich war die Umsetzung eines interaktiven Bildschirms im 3D-Raum.
 Der ursprüngliche Ansatz, Inhalte mithilfe von eingebettetem HTML oder iFrames darzustellen, erwies sich als ungeeignet.
 
-![Example Image](public/images/htmlFail.png)
+![Versuch mit iFrames](public/images/htmlFail.png)
 
 Die Inhalte ließen sich nicht stabil am Bildschirm fixieren und waren teilweise auch von der Rückseite sichtbar, was das visuelle Ergebnis stark beeinträchtigte.
+Um dieses Problem zu lösen, habe ich einen alternativen Ansatz gewählt, der vollständig innerhalb der 3D-Szene funktioniert.
 
-Um dieses Problem zu lösen, habe ich einen alternativer Ansatz gewählt, der vollständig innerhalb der 3D-Szene funktioniert.
-
----
-
-## Lösungsansatz
+### Lösungsansatz für Monitor Interaktion
 
 Statt komplexe HTML-Einbettungen zu verwenden, arbeitet der Bildschirm mit verschiedenen **Modi**:
 
@@ -85,36 +151,27 @@ Statt komplexe HTML-Einbettungen zu verwenden, arbeitet der Bildschirm mit versc
 - `about` – Informationsansicht innerhalb des Bildschirms  
 - `projects` – Projektansicht innerhalb des Bildschirms  
 
-Je nach aktivem Modus werden unterschiedliche **Hitboxen** aktiviert und per Klick abgefragt. Dadurch konnte die gewünschte Interaktivität zuverlässig umgesetzt werden, ohne unnötige technische Komplexität.
+Für alle Modi außer `room` gibt es eigene **PNG-Bilder**, die im Ordner `public/textures` abgelegt sind.  
+- Startseite: für den Modus `screen`  
+- About-Seite: für den Modus `about`  
+- Projects-Seite: für den Modus `projects`  
+
+Diese Bilder wurden in **Canva** erstellt und werden abhängig von der geklickten **Hitbox** auf dem Monitor angezeigt.  
+Je nach aktivem Modus werden unterschiedliche **Hitboxen** aktiviert und per Klick abgefragt, wodurch die gewünschte Interaktivität zuverlässig umgesetzt werden konnte,  ohne unnötige technische Komplexität.  
+
+![Hitbox](public/images/hitboxen.png)
 
 ---
 
 ## Fazit
 
-Das Projekt verdeutlicht, dass **Three.js** ein sehr mächtiges Werkzeug ist, mit dem sich komplexe 3D-Anwendungen im Browser umsetzen lassen. Gleichzeitig zeigt es aber auch, dass viele Funktionen – insbesondere Beleuchtung, Schatten und Interaktionen – mit einem hohen Aufwand verbunden sind.
-
+Das Projekt verdeutlicht, dass Three.js ein sehr mächtiges Werkzeug ist, mit dem sich komplexe 3D-Anwendungen im Browser umsetzen lassen. Gleichzeitig zeigt es aber auch, dass viele Funktionen, insbesondere Beleuchtung, Schatten und Interaktionen, mit einem hohen Aufwand verbunden sind.
 Für dieses Projekt war es daher sinnvoll, an einigen Stellen bewusst auf vereinfachte Lösungen zurückzugreifen. Dadurch konnte die Funktionalität klar und stabil umgesetzt werden, ohne den Rahmen des Projekts zu sprengen.
-
 Insgesamt bietet Three.js großes Potenzial, erfordert jedoch Zeit, Geduld und ein gutes Verständnis der zugrunde liegenden Konzepte.
 
 
+## Quellen
 
-
-
-
-
-## Probleme
-* Lichter und ihre Ausrichtung (Beleuchtung)
-- imitieren von Sonnenlicht und Mondlicht möglich, jedoch viel zu komplex
-
-* Bilschirm embedded html und iframes
-- Hier war das mit html zu komplex und es hat sich immer von bildschirm entfernt anstatt daran zu kleben
-- Lösung: bilder verwenden und dann verschiedene Modi setzen und dann erst darin bestimmte hitboxen abfragen
-
-
-## Acknowledgments
-
-3d models
 * https://www.cgtrader.com/items/3671361/download-page
 * https://www.cgtrader.com/free-3d-models/furniture/table/ikea-desk-90ea611d-4217-48e7-9fd4-eb5ba3e55b32
 * https://www.cgtrader.com/free-3d-models/electronics/computer/free-mechanical-keyboard-3d-model
@@ -127,14 +184,3 @@ Insgesamt bietet Three.js großes Potenzial, erfordert jedoch Zeit, Geduld und e
 * https://sketchfab.com/3d-models/apple-studio-display-f56b9892c6b941168f64bc8323c98875#download
 * https://sketchfab.com/3d-models/white-logitech-g305-be26b2d7187f49459cfeef60c7c3272e#download
 * https://sketchfab.com/3d-models/wooden-desk-monitor-raiser-stand-61a815ff708e4bd095d2c3ee16b55d6f
-* 
-* 
-
-three-js-vite-basic-scene-tutorial-3abc2669da6d (?)
-
-Inspiration, code snippets, etc.
-* [awesome-readme](https://github.com/matiassingers/awesome-readme)
-* [PurpleBooth](https://gist.github.com/PurpleBooth/109311bb0361f32d87a2)
-* [dbader](https://github.com/dbader/readme-template)
-* [zenorocha](https://gist.github.com/zenorocha/4526327)
-* [fvcproductions](https://gist.github.com/fvcproductions/1bfc2d4aecb01a834b46)

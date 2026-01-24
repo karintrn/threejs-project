@@ -106,8 +106,8 @@ hemiLight.position.set( 0, 500, 0 );
 scene.add( hemiLight );
 
 
-const sunLight = new THREE.DirectionalLight(0xffffff, 4); // weiße Sonne
-sunLight.position.set(-100, 100, 40); // Richtung Sonne
+const sunLight = new THREE.DirectionalLight(0xffffff, 4); // white sunlight
+sunLight.position.set(-100, 100, 40); // sun direction
 sunLight.castShadow = true;
 // soft shadows
 sunLight.shadow.mapSize.width = 4096;
@@ -151,7 +151,7 @@ scene.add(moonLight);
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.08;
-controls.maxDistance = 35; // nicht weiter weg
+controls.maxDistance = 35;
 
 
 // 3D Model Loader
@@ -186,7 +186,7 @@ loader.load('/models/isometric-room-plane.glb', (gltf) => {
 });
 
 
-// CSS3DRenderer erstellen
+// create CSS3DRenderer
 const cssRenderer = new CSS3DRenderer();
 cssRenderer.setSize(window.innerWidth, window.innerHeight);
 cssRenderer.domElement.style.top = '0';
