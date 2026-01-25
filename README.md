@@ -48,7 +48,7 @@ Im Tag-Modus ist der Raum hell und neutral ausgeleuchtet, im Nacht-Modus wird ei
 ```bash
 # Repository klonen und ins Projektverzeichnis wechseln
 git clone https://github.com/karintrn/threejs-project.git
-cd room
+cd threejs-project
 
 # Abhängigkeiten installieren
 npm install
